@@ -1,2 +1,3 @@
 # dolphin-doc
-Universal doc to store word,excel,pdf,html,only having text and table element
+Universal doc for NLP, only having text and table element
+The doc can be generated from txt, html and png. And it can also output in text, html and json format.
