@@ -219,7 +219,7 @@ class Table(Rect[int]):
         return self._occupied_area == self.area()
 
     def move(self, cell: Cell, direction: Direction) -> Optional[Cell]:
-        "Find the Cell above the given cell. None if the cell is at the top."
+        "Find the cell follow the direction. None if reach the boundary."
         assert self.ready_to_move()
         if cell.parent is not self:
             raise ValueError("The cell parent is not this table")
@@ -239,7 +239,7 @@ class Table(Rect[int]):
 
     def to_dict(self) -> Dict:
         "dict version for json encoding"
-        return {"type": "Table", "cells": list(map(lambda block: block.to_dict(), self._cells))}
+        return {"type": "table", "cells": list(map(lambda block: block.to_dict(), self._cells))}
 
 
 _BlockType = Union[TextParagraph, Table]
