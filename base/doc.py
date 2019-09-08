@@ -33,7 +33,7 @@ class TextSegment():
         return self._link
 
     def to_dict(self) -> Dict[str, str]:
-        "dict version for json endcoidng"
+        "dict version for json encoding"
         d = {"text": self._text}
         if self._link is not None:
             d["link"] = self._link
@@ -74,7 +74,7 @@ class TextParagraph():
         return self._segments
 
     def to_dict(self) -> Dict:
-        "dict version for json endcoidng"
+        "dict version for json encoding"
         return {"type": "paragraph",
                 "segments": list(map(lambda seg: seg.to_dict(), self._segments))}
 
@@ -131,7 +131,7 @@ class Doc(VerticalBlocks):
     "General Doc"
 
     def to_dict(self) -> Dict:
-        "dict version for json endcoidng"
+        "dict version for json encoding"
         return super()._to_dict("table")
 
     def append_block(self, block: '_BlockType'):
@@ -165,7 +165,7 @@ class Cell(VerticalBlocks, Rect[int]):
         return self.parent.move(self, direction)
 
     def to_dict(self) -> Dict:
-        "dict version for json endcoidng"
+        "dict version for json encoding"
         return super()._to_dict("cell")
 
 
@@ -238,7 +238,7 @@ class Table(Rect[int]):
         return None
 
     def to_dict(self) -> Dict:
-        "dict version for json endcoidng"
+        "dict version for json encoding"
         return {"type": "Table", "cells": list(map(lambda block: block.to_dict(), self._cells))}
 
 
