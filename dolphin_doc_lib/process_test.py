@@ -22,7 +22,7 @@ def test_plain_text():
 
 def test_plain_text_from_file():
     doc = process(Content(source=ContentSource.FILE,
-                          path="testdata/plain_text.txt"))
+                          path="dolphin_doc_lib/testdata/plain_text.txt"))
     blocks = doc.blocks()
     assert len(blocks) == 4
     _assert_block(blocks[0], "paragraph 1")
