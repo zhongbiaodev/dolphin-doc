@@ -1,8 +1,9 @@
 "Base Doc implementation"
-from typing import Dict, List, Optional, Union
 import copy
-from enum import Enum
 import json
+from enum import Enum
+from typing import Dict, List, Optional, Union
+
 from dolphin_doc_lib.base.rect import Rect
 
 
@@ -38,6 +39,11 @@ class TextSegment():
         if self._link is not None:
             d["link"] = self._link
         return d
+
+    def __eq__(self, other):
+        if isinstance(other, TextSegment):
+            return self._text == other._text and self._link == other._link
+        return False
 
 
 class TextParagraph():
@@ -132,11 +138,15 @@ class Doc(VerticalBlocks):
 
     def to_dict(self) -> Dict:
         "dict version for json encoding"
-        return super()._to_dict("table")
+        return super()._to_dict("doc")
 
     def append_block(self, block: '_BlockType'):
         super().append_block(block)
         return self
+
+    def print(self):
+        "print this doc"
+        print(json.dumps(self.to_dict(), indent=4))
 
 
 class Direction(Enum):
@@ -304,7 +314,7 @@ def _main():
     assert cell5.move(Direction.DOWN) is None
 
     doc = Doc().append_block(par1).append_block(par2).append_block(table)
-    print(json.dumps(doc.to_dict(), indent=4))
+    doc.print()
 
 
 if __name__ == '__main__':
