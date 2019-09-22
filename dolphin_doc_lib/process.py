@@ -1,4 +1,4 @@
-"Create Dolphin Doc for various format"
+"Create Dolphin Doc for various content type and source"
 from enum import Enum
 from typing import NamedTuple
 from pathlib import Path
@@ -65,12 +65,3 @@ def _process_image(image_content: str) -> Doc:
 def _process_html(html: str) -> Doc:
     "Create Dolphin Doc from html"
     raise NotImplementedError
-
-
-def _main():
-    doc = process(Content(source=ContentSource.FILE, path="test.txt"))
-    doc.print()
-
-
-if __name__ == '__main__':
-    _main()
