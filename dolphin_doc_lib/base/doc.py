@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 import copy
 from enum import Enum
 import json
-from base.rect import Rect
+from dolphin_doc_lib.base.rect import Rect
 
 
 class TextSegment():
