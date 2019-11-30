@@ -3,7 +3,8 @@ from enum import Enum
 from typing import NamedTuple
 from pathlib import Path
 
-from dolphin_doc_lib.base.doc import Doc, TextParagraph, TextSegment
+from dolphin_doc_lib.base.text import TextParagraph, TextSegment
+from dolphin_doc_lib.base.doc import Doc
 
 
 class ContentType(Enum):

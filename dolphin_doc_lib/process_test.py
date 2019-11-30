@@ -2,7 +2,7 @@
 from typing import cast
 
 from dolphin_doc_lib.process import process, Content, ContentSource
-from dolphin_doc_lib.base.doc import TextParagraph, TextSegment
+from dolphin_doc_lib.base.text import TextParagraph, TextSegment
 
 
 def _assert_block(block, text: str):
