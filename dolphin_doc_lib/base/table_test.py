@@ -1,6 +1,6 @@
 from dolphin_doc_lib.base.rect import Rect
-from dolphin_doc_lib.base.text import TextSegment, TextParagraph
 from dolphin_doc_lib.base.table import Cell, Direction, Table
+from dolphin_doc_lib.base.text import TextSegment, TextParagraph
 
 
 def test_move_cell():

@@ -1,10 +1,10 @@
 "Create Dolphin Doc for various content type and source"
 from enum import Enum
-from typing import NamedTuple
 from pathlib import Path
+from typing import NamedTuple
 
-from dolphin_doc_lib.base.text import TextParagraph, TextSegment
 from dolphin_doc_lib.base.doc import Doc
+from dolphin_doc_lib.base.text import TextParagraph, TextSegment
 
 
 class ContentType(Enum):

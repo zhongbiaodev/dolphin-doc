@@ -2,8 +2,8 @@
 import json
 from typing import Dict, List, Union
 
-from dolphin_doc_lib.base.text import TextParagraph
 from dolphin_doc_lib.base.table import Table
+from dolphin_doc_lib.base.text import TextParagraph
 
 BlockType = Union[TextParagraph, Table]
 
