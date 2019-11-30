@@ -1,18 +1,19 @@
 "Base classes for geometrics related operations"
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Dict
 
-T = TypeVar('T')
+T = TypeVar("T", int, float)
 
 
 class Rect(Generic[T]):
-    '''Class to represent a rectangle.
-    X-axis direction: from left to right.
-    Y-axis direction: from top to bottom.
+    """Class to represent a rectangle.
 
-    T should be int or float.
-    When T is int: right and bottom are inside the Rect.
-    When T is float: right and bottom are on the edge.
-    '''
+      X-axis direction: from left to right.
+      Y-axis direction: from top to bottom.
+
+      T should be int or float.
+      When T is int: right and bottom are inside the Rect.
+      When T is float: right and bottom are on the edge.
+      """
     _x: T
     _y: T
     _w: T
@@ -35,8 +36,8 @@ class Rect(Generic[T]):
     def right(self) -> T:
         "Return right."
         if isinstance(self._x, int):
-            return self._x+self._w-1
-        return self._x+self._w
+            return self._x + self._w - 1
+        return self._x + self._w
 
     def top(self) -> T:
         "Return top."
@@ -45,8 +46,8 @@ class Rect(Generic[T]):
     def bottom(self) -> T:
         "Return bottom."
         if isinstance(self._x, int):
-            return self._y+self._h-1
-        return self._y+self._h
+            return self._y + self._h - 1
+        return self._y + self._h
 
     def width(self) -> T:
         "Return width."
@@ -60,7 +61,7 @@ class Rect(Generic[T]):
         "Return the area."
         return self._w * self._h
 
-    def contains(self, other: 'Rect[T]') -> bool:
+    def contains(self, other: "Rect[T]") -> bool:
         "Return whether a rect is inside the current rect."
         return self.left() <= other.left() \
             and self.right() >= other.right() \
@@ -71,3 +72,11 @@ class Rect(Generic[T]):
         "Return whether a point is inside the current rect."
         return self.left() <= x <= self.right() \
             and self.top() <= y <= self.bottom()
+
+    def to_dict(self) -> Dict[str, T]:
+        return {
+            "left": self.left(),
+            "top": self.top(),
+            "width": self.width(),
+            "height": self.height()
+        }

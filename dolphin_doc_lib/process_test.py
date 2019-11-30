@@ -7,7 +7,8 @@ from dolphin_doc_lib.base.doc import TextParagraph, TextSegment
 
 def _assert_block(block, text: str):
     assert isinstance(block, TextParagraph)
-    assert cast(TextParagraph, block).segments() == [TextSegment(text)]
+    assert len(block.segments()) == 1
+    assert block.segments()[0].to_dict() == TextSegment(text).to_dict()
 
 
 def test_plain_text():
@@ -21,8 +22,9 @@ def test_plain_text():
 
 
 def test_plain_text_from_file():
-    doc = process(Content(source=ContentSource.FILE,
-                          path="dolphin_doc_lib/testdata/plain_text.txt"))
+    doc = process(
+        Content(source=ContentSource.FILE,
+                path="dolphin_doc_lib/testdata/plain_text.txt"))
     blocks = doc.blocks()
     assert len(blocks) == 4
     _assert_block(blocks[0], "paragraph 1")
