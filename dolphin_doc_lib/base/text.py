@@ -70,5 +70,5 @@ class TextParagraph():
         "dict version for json encoding"
         return {
             "type": "text_paragraph",
-            "segments": list(map(lambda seg: seg.to_dict(), self._segments))
+            "segments": [seg.to_dict() for seg in self._segments]
         }

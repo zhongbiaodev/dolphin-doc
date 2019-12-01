@@ -31,7 +31,7 @@ class Doc():
         "dict version for json encoding"
         return {
             "type": "doc",
-            "blocks": list(map(lambda block: block.to_dict(), self._blocks))
+            "blocks": [block.to_dict() for block in self._blocks]
         }
 
     def print(self):
