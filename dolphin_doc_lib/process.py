@@ -24,7 +24,9 @@ class Content(NamedTuple):
     "Content to process"
     type: ContentType = ContentType.TEXT
     source: ContentSource = ContentSource.STRING
+    "set data when source is STRING"
     data: str = ""
+    "set path when source is FILE"
     path: str = ""
 
 
