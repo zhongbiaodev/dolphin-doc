@@ -36,4 +36,6 @@ class Doc():
 
     def print(self):
         "print this doc"
-        print(json.dumps(self.to_dict(), indent=4))
+        print(
+            json.dumps(self.to_dict(), indent=4,
+                       ensure_ascii=False).encode('utf8').decode())

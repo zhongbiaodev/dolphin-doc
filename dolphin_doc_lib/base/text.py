@@ -49,10 +49,8 @@ class TextParagraph():
 
         The new segment would be merged with the last segment
         if neither of them has link attached.
+        The input segment is immutable.
         """
-        if segment.parent:
-            raise ValueError(
-                "Should not append a text segment that already has a parent")
         if self._segments and not self._segments[-1].link(
         ) and not segment.link():
             self._segments[-1].append_text(segment.text())
