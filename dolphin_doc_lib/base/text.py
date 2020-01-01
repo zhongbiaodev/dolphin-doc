@@ -27,6 +27,10 @@ class TextSegment():
         "Return link content, None if there is no link attached."
         return self._link
 
+    def attach_link(self, link: str) -> None:
+        "Attach link to the text segment"
+        self._link = link
+
     def to_dict(self) -> Dict[str, str]:
         "dict version for json encoding"
         d = {"type": "text_segment", "text": self._text}
