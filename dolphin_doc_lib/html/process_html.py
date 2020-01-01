@@ -47,12 +47,27 @@ def _process_cell_node(node, outputs: List[ProcessOutput]) -> Cell:
 
 
 def _process_table_row_node(outputs: List[ProcessOutput]) -> List[Cell]:
-    return [cast(Cell, o) for o in outputs]
+    all_cell_empty: bool = True
+    casted_outputs: List[Cell] = []
+    for o in outputs:
+        cell = cast(Cell, o)
+        casted_outputs.append(cell)
+        if not cell.is_empty():
+            all_cell_empty = False
+
+    if all_cell_empty:
+        return []
+    return casted_outputs
 
 
 def _process_table_section_node(
         outputs: List[ProcessOutput]) -> List[List[Cell]]:
-    return [cast(List[Cell], o) for o in outputs]
+    casted_outputs: List[List[Cell]] = []
+    for o in outputs:
+        row = cast(List[Cell], o)
+        if row:
+            casted_outputs.append(row)
+    return casted_outputs
 
 
 def _process_table_node(outputs: List[ProcessOutput]) -> BlocksInfo:

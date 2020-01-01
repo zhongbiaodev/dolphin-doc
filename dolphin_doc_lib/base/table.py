@@ -43,6 +43,9 @@ class Cell(Rect[int]):
         assert self.parent
         return self.parent.move(self, direction)
 
+    def is_empty(self) -> bool:
+        return len(self._paragraphs) == 0
+
     def to_dict(self) -> Dict:
         "dict version for json encoding"
         return {
@@ -59,6 +62,24 @@ class CellLayoutResult(NamedTuple):
 
 
 def layout_cells(cells: List[List[Cell]]) -> CellLayoutResult:
+    if not cells:
+        return CellLayoutResult()
+
+    est_width: int = 0
+    est_height: int = 0
+
+    for row in cells:
+        #ignore empty list
+        if not row:
+            continue
+        est_height += row[0].height()
+        if est_width == 0:
+            for cell in row:
+                est_width += cell.width()
+
+    if est_width == 0 or est_height == 0:
+        return CellLayoutResult()
+
     return CellLayoutResult()
 
 
