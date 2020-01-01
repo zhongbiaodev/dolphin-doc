@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, NamedTuple
 
 from dolphin_doc_lib.base.rect import Rect
 from dolphin_doc_lib.base.text import TextParagraph
@@ -33,6 +33,11 @@ class Cell(Rect[int]):
         self._paragraphs.append(paragraph)
         return self
 
+    def append_paragraphs(self, paragraphs: List[TextParagraph]) -> "Cell":
+        for par in paragraphs:
+            self.append_paragraph(par)
+        return self
+
     def move(self, direction: Direction) -> Optional["Cell"]:
         "Return the next Cell follow the direction. None if already reach the boundary."
         assert self.parent
@@ -47,6 +52,16 @@ class Cell(Rect[int]):
         }
 
 
+class CellLayoutResult(NamedTuple):
+    row_num: int = 0
+    col_num: int = 0
+    cells: List[Cell] = []
+
+
+def layout_cells(cells: List[List[Cell]]) -> CellLayoutResult:
+    return CellLayoutResult()
+
+
 class Table(Rect[int]):
     "Class that stores list of cells"
     parent: Optional[Any] = None
@@ -54,14 +69,21 @@ class Table(Rect[int]):
 
     _board: List[List[int]]
     _occupied_area: int
+    _ready_to_move: bool
 
-    def __init__(self, row_num: int, col_num: int):
+    def __init__(self, row_num: int, col_num: int, cells: List[Cell] = []):
         super().__init__(0, 0, col_num, row_num)
         self.parent = None
-        self._cells = []
+        self._cells = cells
         self._occupied_area = 0
         self._board = [[_UNOCCUPIED_CELL for x in range(col_num)]
                        for y in range(row_num)]
+        self._ready_to_move = False
+        if cells:
+            self.add_cells(cells)
+
+    def cells(self) -> List[Cell]:
+        return self._cells
 
     def _fill_board(self, cell: Cell, idx: int):
         for row in range(cell.top(), cell.bottom() + 1):
@@ -84,15 +106,26 @@ class Table(Rect[int]):
 
         cell.parent = self
         self._cells.append(cell)
-        self._cells.sort(key=lambda cell: (cell.top(), cell.left()))
-        self._occupied_area = 0
-        for i, _cell in enumerate(self._cells):
-            self._fill_board(_cell, i)
+        self._fill_board(cell, len(self._cells) - 1)
+        if self._occupied_area == self.area():
+            self._sort_cells()
+            self._ready_to_move = True
+        return self
+
+    def add_cells(self, cells: List[Cell]) -> "Table":
+        for cell in cells:
+            self.add_cell(cell)
         return self
 
     def ready_to_move(self) -> bool:
         "Return whether all the cells are added"
-        return self._occupied_area == self.area()
+        return self._ready_to_move
+
+    def _sort_cells(self) -> None:
+        self._cells.sort(key=lambda cell: (cell.top(), cell.left()))
+        self._occupied_area = 0
+        for i, _cell in enumerate(self._cells):
+            self._fill_board(_cell, i)
 
     def move(self, cell: Cell, direction: Direction) -> Optional[Cell]:
         "Find the cell follow the direction. None if reach the boundary."

@@ -14,13 +14,18 @@ class Doc():
     def __init__(self):
         self._blocks: List[BlockType] = []
 
-    def append_block(self, block: BlockType):
+    def append_block(self, block: BlockType) -> "Doc":
         "Append a block"
         if block.parent:
             raise ValueError(
                 "Should not append a block that already has a parent")
         block.parent = self
         self._blocks.append(block)
+        return self
+
+    def append_blocks(self, blocks: List[BlockType]) -> "Doc":
+        for block in blocks:
+            self.append_block(block)
         return self
 
     def blocks(self) -> List[BlockType]:

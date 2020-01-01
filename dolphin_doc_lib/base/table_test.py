@@ -18,8 +18,19 @@ def test_move_cell():
         TextParagraph().append_text_segment(TextSegment("C4")))
     cell5 = Cell(Rect[int](2, 0, 1, 2)).append_paragraph(
         TextParagraph().append_text_segment(TextSegment("C5")))
-    table.add_cell(cell1).add_cell(cell2).add_cell(cell3).add_cell(
-        cell4).add_cell(cell5)
+
+    table.add_cell(cell1).add_cell(cell5).add_cell(cell4).add_cell(cell3)
+    assert table.cells()[0] == cell1
+    assert table.cells()[1] == cell5
+    assert table.cells()[2] == cell4
+    assert table.cells()[3] == cell3
+
+    table.add_cell(cell2)
+    assert table.cells()[0] == cell1
+    assert table.cells()[1] == cell3
+    assert table.cells()[2] == cell5
+    assert table.cells()[3] == cell2
+    assert table.cells()[4] == cell4
 
     assert table.ready_to_move()
     assert cell1.move(Direction.LEFT) is None

@@ -1,4 +1,4 @@
-from typing import List, NamedTuple, List, cast
+from typing import List, cast
 
 from dolphin_doc_lib.base.doc import BlockType
 from dolphin_doc_lib.base.text import TextParagraph
