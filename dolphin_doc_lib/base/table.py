@@ -55,32 +55,41 @@ class Cell(Rect[int]):
         }
 
 
-class CellLayoutResult(NamedTuple):
+class TableSection(NamedTuple):
+    "Layout result of List[List[Cell]], table section size and cell position is calculated"
     row_num: int = 0
     col_num: int = 0
     cells: List[Cell] = []
 
 
-def layout_cells(cells: List[List[Cell]]) -> CellLayoutResult:
-    if not cells:
-        return CellLayoutResult()
+def layout_cells(cell_mat: List[List[Cell]]) -> TableSection:
+    cell_mat = [cell_row for cell_row in cell_mat if cell_row]
+    if not cell_mat:
+        return TableSection()
 
-    est_width: int = 0
-    est_height: int = 0
+    row_num: int = 0
+    col_num: int = sum([cell.width() for cell in cell_mat[0]])
+    height_per_col = [0] * col_num
+    cells: List[Cell] = []
+    for cell_row in cell_mat:
+        cur_height = min(height_per_col)
+        empty_slots = [
+            i for i, h in enumerate(height_per_col) if h == cur_height
+        ]
+        for cell in cell_row:
+            width = cell.width()
+            assert width <= len(empty_slots)
+            assert empty_slots[width - 1] - empty_slots[0] == width - 1
+            cell.set_position(empty_slots[0], cur_height)
+            cells.append(cell)
+            height_per_col[empty_slots[0]:empty_slots[0] +
+                           width] = [cur_height + cell.height()] * width
+            empty_slots = empty_slots[width:]
+        assert len(empty_slots) == 0
 
-    for row in cells:
-        #ignore empty list
-        if not row:
-            continue
-        est_height += row[0].height()
-        if est_width == 0:
-            for cell in row:
-                est_width += cell.width()
+    assert max(height_per_col) == min(height_per_col)
 
-    if est_width == 0 or est_height == 0:
-        return CellLayoutResult()
-
-    return CellLayoutResult()
+    return TableSection(height_per_col[0], col_num, cells)
 
 
 class Table(Rect[int]):
@@ -95,7 +104,7 @@ class Table(Rect[int]):
     def __init__(self, row_num: int, col_num: int, cells: List[Cell] = []):
         super().__init__(0, 0, col_num, row_num)
         self.parent = None
-        self._cells = cells
+        self._cells = []
         self._occupied_area = 0
         self._board = [[_UNOCCUPIED_CELL for x in range(col_num)]
                        for y in range(row_num)]

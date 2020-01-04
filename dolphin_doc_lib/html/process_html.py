@@ -37,6 +37,7 @@ def _process_string_node(node) -> BlocksInfo:
 def _process_cell_node(node, outputs: List[ProcessOutput]) -> Cell:
     colspan = int(node.attrs['colspan']) if node.has_attr('colspan') else 1
     rowspan = int(node.attrs['rowspan']) if node.has_attr('rowspan') else 1
+    # rowspan = "0" or colspan = "0" is not supported.
     cell = Cell(Rect[int](0, 0, colspan, rowspan))
 
     blocks_info = merge_blocks_info_list(
@@ -47,27 +48,15 @@ def _process_cell_node(node, outputs: List[ProcessOutput]) -> Cell:
 
 
 def _process_table_row_node(outputs: List[ProcessOutput]) -> List[Cell]:
-    all_cell_empty: bool = True
-    casted_outputs: List[Cell] = []
-    for o in outputs:
-        cell = cast(Cell, o)
-        casted_outputs.append(cell)
-        if not cell.is_empty():
-            all_cell_empty = False
-
-    if all_cell_empty:
+    casted_outputs = [cast(Cell, o) for o in outputs]
+    if all(cell.is_empty() for cell in casted_outputs):
         return []
     return casted_outputs
 
 
 def _process_table_section_node(
         outputs: List[ProcessOutput]) -> List[List[Cell]]:
-    casted_outputs: List[List[Cell]] = []
-    for o in outputs:
-        row = cast(List[Cell], o)
-        if row:
-            casted_outputs.append(row)
-    return casted_outputs
+    return [cast(List[Cell], o) for o in outputs if o]
 
 
 def _process_table_node(outputs: List[ProcessOutput]) -> BlocksInfo:

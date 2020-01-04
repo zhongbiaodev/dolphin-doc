@@ -29,6 +29,10 @@ class Rect(Generic[T]):
         self._w = w
         self._h = h
 
+    def set_position(self, x: T, y: T):
+        self._x = x
+        self._y = y
+
     def left(self) -> T:
         "Return left."
         return self._x
