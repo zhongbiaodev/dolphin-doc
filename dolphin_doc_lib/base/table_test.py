@@ -1,6 +1,56 @@
 from dolphin_doc_lib.base.rect import Rect
-from dolphin_doc_lib.base.table import Cell, Direction, Table
+from dolphin_doc_lib.base.table import Cell, Direction, Table, layout_cells
 from dolphin_doc_lib.base.text import TextSegment, TextParagraph
+
+
+def create_cell(x: int, y: int) -> Cell:
+    return Cell(Rect[int](0, 0, x, y))
+
+
+def assert_cell(cell: Cell, x: int, y: int, w: int, h: int) -> None:
+    assert cell.left() == x
+    assert cell.top() == y
+    assert cell.width() == w
+    assert cell.height() == h
+
+
+def test_layout_cells():
+    table_section = layout_cells([[create_cell(1, 1),
+                                   create_cell(1, 1)],
+                                  [create_cell(1, 1),
+                                   create_cell(1, 1)]])
+
+    assert table_section.row_num == 2
+    assert table_section.col_num == 2
+    assert_cell(table_section.cells[0], 0, 0, 1, 1)
+    assert_cell(table_section.cells[1], 1, 0, 1, 1)
+    assert_cell(table_section.cells[2], 0, 1, 1, 1)
+    assert_cell(table_section.cells[3], 1, 1, 1, 1)
+
+    # C1, C2, C3, C3
+    # C4, C2, C5, C6
+    # C4, C7, C7, C6
+    # C8, C8, C9, C6
+    table_section = layout_cells(
+        [[create_cell(1, 1),
+          create_cell(1, 2),
+          create_cell(2, 1)],
+         [create_cell(1, 2),
+          create_cell(1, 1),
+          create_cell(1, 3)], [create_cell(2, 1)],
+         [create_cell(2, 1), create_cell(1, 1)]])
+
+    assert table_section.row_num == 4
+    assert table_section.col_num == 4
+    assert_cell(table_section.cells[0], 0, 0, 1, 1)
+    assert_cell(table_section.cells[1], 1, 0, 1, 2)
+    assert_cell(table_section.cells[2], 2, 0, 2, 1)
+    assert_cell(table_section.cells[3], 0, 1, 1, 2)
+    assert_cell(table_section.cells[4], 2, 1, 1, 1)
+    assert_cell(table_section.cells[5], 3, 1, 1, 3)
+    assert_cell(table_section.cells[6], 1, 2, 2, 1)
+    assert_cell(table_section.cells[7], 0, 3, 2, 1)
+    assert_cell(table_section.cells[8], 2, 3, 1, 1)
 
 
 def test_move_cell():
