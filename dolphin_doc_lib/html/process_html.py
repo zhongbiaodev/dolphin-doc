@@ -22,6 +22,11 @@ TABLE_TAG = 'table'
 ProcessOutput = Union[BlocksInfo, Cell, List[Cell], List[List[Cell]]]
 
 
+# empty BlockInfo introduced by "\n"
+def _empty_blocks_info(output: ProcessOutput) -> bool:
+    return type(output) is BlocksInfo and not cast(BlocksInfo, output).blocks
+
+
 def _process_string_node(node) -> BlocksInfo:
     # strip string to mimic browser behavior, not 100% accurate
     content: str = node.strip()
@@ -46,8 +51,7 @@ def _process_cell_node(node, outputs: List[ProcessOutput]) -> Cell:
 
 
 def _process_table_row_node(outputs: List[ProcessOutput]) -> List[Cell]:
-    # filter empty BlockInfo introduced by "\n".
-    casted_outputs = [cast(Cell, o) for o in outputs if type(o) is Cell]
+    casted_outputs = [cast(Cell, o) for o in outputs]
     if all(cell.is_empty() for cell in casted_outputs):
         return []
     return casted_outputs
@@ -55,18 +59,13 @@ def _process_table_row_node(outputs: List[ProcessOutput]) -> List[Cell]:
 
 def _process_table_section_node(
         outputs: List[ProcessOutput]) -> List[List[Cell]]:
-    # filter empty BlockInfo introduced by "\n".
-    return [
-        cast(List[Cell], o) for o in outputs if type(o) is List[Cell] and o
-    ]
+    return [cast(List[Cell], o) for o in outputs]
 
 
 def _process_table_node(outputs: List[ProcessOutput]) -> BlocksInfo:
     cells: List[List[Cell]] = []
-    # filter empty BlockInfo introduced by "\n".
     for o in outputs:
-        if type(o) is List[List[Cell]]:
-            cells.extend(cast(List[List[Cell]], o))
+        cells.extend(cast(List[List[Cell]], o))
 
     result = layout_cells(cells)
     if not result.cells:
@@ -89,12 +88,21 @@ def _process(node) -> ProcessOutput:
         return _process_cell_node(node, children_outputs)
 
     if node.name == TABLE_ROW_TAG:
+        children_outputs = [
+            o for o in children_outputs if not _empty_blocks_info(o)
+        ]
         return _process_table_row_node(children_outputs)
 
     if node.name in TABLE_SECTION_TAGS:
+        children_outputs = [
+            o for o in children_outputs if not _empty_blocks_info(o)
+        ]
         return _process_table_section_node(children_outputs)
 
     if node.name == TABLE_TAG:
+        children_outputs = [
+            o for o in children_outputs if not _empty_blocks_info(o)
+        ]
         return _process_table_node(children_outputs)
 
     blocks_info = merge_blocks_info_list(
