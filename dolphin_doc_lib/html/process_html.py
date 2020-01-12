@@ -8,7 +8,7 @@ from dolphin_doc_lib.base.text import TextParagraph, TextSegment
 
 from dolphin_doc_lib.html.block_info import BlocksInfo, merge_blocks_info_list
 
-FORCE_SPLIT_TAGS = ['p']
+FORCE_SPLIT_TAGS = ['p', 'br']
 
 CELL_TAGS = ['td', 'th']
 TABLE_ROW_TAG = 'tr'
@@ -29,9 +29,7 @@ def _process_string_node(node) -> BlocksInfo:
         return BlocksInfo()
 
     par = TextParagraph().append_text_segment(TextSegment(content))
-    return BlocksInfo(blocks=[par],
-                      first_block_mergeable=True,
-                      last_block_mergeable=True)
+    return BlocksInfo(blocks=[par])
 
 
 def _process_cell_node(node, outputs: List[ProcessOutput]) -> Cell:
@@ -48,7 +46,8 @@ def _process_cell_node(node, outputs: List[ProcessOutput]) -> Cell:
 
 
 def _process_table_row_node(outputs: List[ProcessOutput]) -> List[Cell]:
-    casted_outputs = [cast(Cell, o) for o in outputs]
+    # filter empty BlockInfo introduced by "\n".
+    casted_outputs = [cast(Cell, o) for o in outputs if type(o) is Cell]
     if all(cell.is_empty() for cell in casted_outputs):
         return []
     return casted_outputs
@@ -56,20 +55,25 @@ def _process_table_row_node(outputs: List[ProcessOutput]) -> List[Cell]:
 
 def _process_table_section_node(
         outputs: List[ProcessOutput]) -> List[List[Cell]]:
-    return [cast(List[Cell], o) for o in outputs if o]
+    # filter empty BlockInfo introduced by "\n".
+    return [
+        cast(List[Cell], o) for o in outputs if type(o) is List[Cell] and o
+    ]
 
 
 def _process_table_node(outputs: List[ProcessOutput]) -> BlocksInfo:
     cells: List[List[Cell]] = []
+    # filter empty BlockInfo introduced by "\n".
     for o in outputs:
-        cells.extend(cast(List[List[Cell]], o))
+        if type(o) is List[List[Cell]]:
+            cells.extend(cast(List[List[Cell]], o))
 
     result = layout_cells(cells)
     if not result.cells:
-        return BlocksInfo()
+        return BlocksInfo().make_non_mergeable()
 
     table = Table(result.row_num, result.col_num, result.cells)
-    return BlocksInfo(blocks=[table])
+    return BlocksInfo(blocks=[table]).make_non_mergeable()
 
 
 # traverse the tree using dfs
@@ -79,12 +83,7 @@ def _process(node) -> ProcessOutput:
         return _process_string_node(node)
 
     # process non-leaf nodes
-    children_outputs: List[ProcessOutput] = []
-    for child in node:
-        output = _process(child)
-        if type(output) == BlocksInfo and not cast(BlocksInfo, output).blocks:
-            continue
-        children_outputs.append(output)
+    children_outputs: List[ProcessOutput] = [_process(child) for child in node]
 
     if node.name in CELL_TAGS:
         return _process_cell_node(node, children_outputs)
@@ -120,6 +119,8 @@ def process_html(html: str) -> Doc:
 
 from pathlib import Path
 if __name__ == '__main__':
-    html = Path("dolphin_doc_lib/testdata/test.html").read_text()
+    html = Path(
+        "/Users/jzfeng/MyProjects/dolphin-doc/dolphin_doc_lib/testdata/test.html"
+    ).read_text()
     doc = process_html(html)
     doc.print()

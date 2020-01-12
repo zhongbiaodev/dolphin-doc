@@ -18,13 +18,10 @@ def _merge_block(block1: BlockType, block2: BlockType) -> BlockType:
 class BlocksInfo():
     "HTML element in dolphin Block form, it is intermediate result during converting"
 
-    def __init__(self,
-                 blocks: List[BlockType] = [],
-                 first_block_mergeable: bool = False,
-                 last_block_mergeable: bool = False):
+    def __init__(self, blocks: List[BlockType] = []):
         self.blocks: List[BlockType] = blocks
-        self.first_block_mergeable: bool = first_block_mergeable
-        self.last_block_mergeable: bool = last_block_mergeable
+        self.first_block_mergeable: bool = True
+        self.last_block_mergeable: bool = True
 
     def attach_link(self, link: str) -> "BlocksInfo":
         if len(self.blocks) != 1:
@@ -38,17 +35,20 @@ class BlocksInfo():
         segments[0].attach_link(link)
         return self
 
-    def make_non_mergeable(self) -> None:
+    def make_non_mergeable(self) -> "BlocksInfo":
         self.first_block_mergeable = False
         self.last_block_mergeable = False
+        return self
 
     def merge_blocks_info(self, other: "BlocksInfo") -> "BlocksInfo":
         if not other.blocks:
+            if not other.first_block_mergeable:
+                self.last_block_mergeable = False
             return self
 
         if not self.blocks:
             self.blocks = other.blocks
-            self.first_block_mergeable = other.first_block_mergeable
+            self.first_block_mergeable = self.first_block_mergeable and other.first_block_mergeable
             self.last_block_mergeable = other.last_block_mergeable
             return self
 
