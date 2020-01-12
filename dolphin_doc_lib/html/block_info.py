@@ -1,3 +1,4 @@
+import logging
 from typing import List, cast
 
 from dolphin_doc_lib.base.doc import BlockType
@@ -24,6 +25,10 @@ class BlocksInfo():
         self.last_block_mergeable: bool = True
 
     def attach_link(self, link: str) -> "BlocksInfo":
+        if not self.blocks:
+            logging.warning(
+                "trying to attach link {} to an empty BlocksInfo".format(link))
+            return
         if len(self.blocks) != 1:
             raise ValueError("can not attach link: block number is not 1")
         if type(self.blocks[0]) is not TextParagraph:

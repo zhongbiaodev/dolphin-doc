@@ -1,5 +1,5 @@
 from typing import List, NamedTuple, Optional, List, Union, cast
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup, NavigableString, Comment, ProcessingInstruction, Doctype
 
 from dolphin_doc_lib.base.doc import Doc, BlockType
 from dolphin_doc_lib.base.rect import Rect
@@ -14,6 +14,8 @@ CELL_TAGS = ['td', 'th']
 TABLE_ROW_TAG = 'tr'
 TABLE_SECTION_TAGS = ['tbody', 'thead', 'tfoot']
 TABLE_TAG = 'table'
+
+IGNORE_TAGS = ['style', 'script']
 
 # BlocksInfo for general case
 # Cell for node with tag td, th
@@ -75,8 +77,19 @@ def _process_table_node(outputs: List[ProcessOutput]) -> BlocksInfo:
     return BlocksInfo(blocks=[table]).make_non_mergeable()
 
 
+def _ignore_node(node) -> bool:
+    if type(node) in (Comment, ProcessingInstruction, Doctype):
+        return True
+    if node.name in IGNORE_TAGS:
+        return True
+    return False
+
+
 # traverse the tree using dfs
 def _process(node) -> ProcessOutput:
+    if _ignore_node(node):
+        return BlocksInfo()
+
     # process leaf nodes
     if type(node) is NavigableString:
         return _process_string_node(node)
