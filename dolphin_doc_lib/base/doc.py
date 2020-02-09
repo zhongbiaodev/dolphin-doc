@@ -39,11 +39,6 @@ class Doc():
             "blocks": [block.to_dict() for block in self._blocks]
         }
 
-    def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            return self.to_dict() == other.to_dict()
-        return NotImplemented
-
     def print(self):
         "print this doc"
         print(

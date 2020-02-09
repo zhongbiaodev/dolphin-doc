@@ -8,14 +8,34 @@ from dolphin_doc_lib.base.text import TextParagraph, TextSegment
 
 from dolphin_doc_lib.html.block_info import BlocksInfo, merge_blocks_info_list
 
-FORCE_SPLIT_TAGS = ['p', 'br']
+FORCE_SPLIT_TAGS = [
+    'p',
+    'br',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'pre',
+    'address',
+    'blockquote',
+    'dl',
+    'div',
+    'fieldset',
+    'form',
+    'hr',
+    'ol',
+    'ul',
+    'li',
+]
 
 CELL_TAGS = ['td', 'th']
 TABLE_ROW_TAG = 'tr'
 TABLE_SECTION_TAGS = ['tbody', 'thead', 'tfoot']
 TABLE_TAG = 'table'
 
-IGNORE_TAGS = ['style', 'script']
+IGNORE_TAGS = ['style', 'script', 'noscript']
 
 # BlocksInfo for general case
 # Cell for node with tag td, th
@@ -136,12 +156,3 @@ def process_html(html: str) -> Doc:
     blocks_info = cast(BlocksInfo, _process(root))
     doc = Doc().append_blocks(blocks_info.blocks)
     return doc
-
-
-from pathlib import Path
-if __name__ == '__main__':
-    html = Path(
-        "/Users/jzfeng/MyProjects/dolphin-doc/dolphin_doc_lib/testdata/test.html"
-    ).read_text()
-    doc = process_html(html)
-    doc.print()

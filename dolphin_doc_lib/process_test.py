@@ -15,7 +15,7 @@ def test_plain_text():
     par3 = TextParagraph().append_text_segment(TextSegment("paragraph 3"))
     expect_doc = Doc().append_blocks([par1, par2, par3])
 
-    assert doc == expect_doc
+    assert doc.to_dict() == expect_doc.to_dict()
 
 
 def test_plain_text_from_file():
@@ -29,4 +29,4 @@ def test_plain_text_from_file():
     par4 = TextParagraph().append_text_segment(TextSegment("paragraph 4"))
     expect_doc = Doc().append_blocks([par1, par2, par3, par4])
 
-    assert doc == expect_doc
+    assert doc.to_dict() == expect_doc.to_dict()
