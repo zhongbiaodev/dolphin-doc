@@ -52,6 +52,22 @@ def test_layout_cells():
     assert_cell(table_section.cells[7], 0, 3, 2, 1)
     assert_cell(table_section.cells[8], 2, 3, 1, 1)
 
+    # C1, C1, C1
+    # C2, C3, X
+    # C2, X , X
+    table_section = layout_cells([[create_cell(3, 1)],
+                                  [create_cell(1, 2),
+                                   create_cell(1, 1)]])
+
+    assert table_section.row_num == 3
+    assert table_section.col_num == 3
+    assert_cell(table_section.cells[0], 0, 0, 3, 1)
+    assert_cell(table_section.cells[1], 0, 1, 1, 2)
+    assert_cell(table_section.cells[2], 1, 1, 1, 1)
+    assert_cell(table_section.cells[3], 2, 1, 1, 1)
+    assert_cell(table_section.cells[4], 1, 2, 1, 1)
+    assert_cell(table_section.cells[5], 2, 2, 1, 1)
+
 
 def test_move_cell():
     # Table with 2 rows, 3 cols.

@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from typing import Dict, List, Optional, Any, NamedTuple
 
@@ -85,9 +86,26 @@ def layout_cells(cell_mat: List[List[Cell]]) -> TableSection:
             height_per_col[empty_slots[0]:empty_slots[0] +
                            width] = [cur_height + cell.height()] * width
             empty_slots = empty_slots[width:]
-        assert len(empty_slots) == 0
 
-    assert max(height_per_col) == min(height_per_col)
+        # add missing cells on the current row, should not happen
+        for slot in empty_slots:
+            logging.warning("adding a 1x1 cell at position x={}, y={}".format(
+                slot, cur_height))
+            cells.append(Cell(Rect[int](slot, cur_height, 1, 1)))
+            height_per_col[slot] = cur_height + 1
+
+    # add all the missing cells, should not happen
+    while max(height_per_col) > min(height_per_col):
+        cur_height = min(height_per_col)
+        empty_slots = [
+            i for i, h in enumerate(height_per_col) if h == cur_height
+        ]
+        # add missing cells on the current row, should not happen
+        for slot in empty_slots:
+            logging.warning("adding a 1x1 cell at position x={}, y={}".format(
+                slot, cur_height))
+            cells.append(Cell(Rect[int](slot, cur_height, 1, 1)))
+            height_per_col[slot] = cur_height + 1
 
     return TableSection(height_per_col[0], col_num, cells)
 
