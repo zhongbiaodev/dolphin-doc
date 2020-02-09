@@ -28,7 +28,7 @@ class BlocksInfo():
         if not self.blocks:
             logging.warning(
                 "trying to attach link {} to an empty BlocksInfo".format(link))
-            return
+            return self
         if len(self.blocks) != 1:
             raise ValueError("can not attach link: block number is not 1")
         if type(self.blocks[0]) is not TextParagraph:
