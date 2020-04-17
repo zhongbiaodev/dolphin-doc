@@ -1,9 +1,11 @@
 "Create Dolphin Doc for various content type and source"
 from enum import Enum
-from typing import NamedTuple
 from pathlib import Path
+from typing import NamedTuple
 
-from dolphin_doc_lib.base.doc import Doc, TextParagraph, TextSegment
+from dolphin_doc_lib.base.doc import Doc
+from dolphin_doc_lib.base.text import TextParagraph, TextSegment
+from dolphin_doc_lib.html.process_html import process_html
 
 
 class ContentType(Enum):
@@ -23,7 +25,9 @@ class Content(NamedTuple):
     "Content to process"
     type: ContentType = ContentType.TEXT
     source: ContentSource = ContentSource.STRING
+    "set data when source is STRING"
     data: str = ""
+    "set path when source is FILE"
     path: str = ""
 
 
@@ -42,7 +46,7 @@ def process(content: Content) -> Doc:
     if content.type == ContentType.IMG:
         return _process_image(data)
     if content.type == ContentType.HTML:
-        return _process_html(data)
+        return process_html(data)
     raise ValueError("Not a valid content type")
 
 
@@ -59,9 +63,4 @@ def _process_text(text: str) -> Doc:
 
 def _process_image(image_content: str) -> Doc:
     "Create Dolphin Doc from image"
-    raise NotImplementedError
-
-
-def _process_html(html: str) -> Doc:
-    "Create Dolphin Doc from html"
     raise NotImplementedError
